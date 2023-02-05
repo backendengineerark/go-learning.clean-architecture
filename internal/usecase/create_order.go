@@ -1,6 +1,9 @@
 package usecase
 
-import "github.com/backendengineerark/clean-arch/internal/entity"
+import (
+	"github.com/backendengineerark/clean-arch/internal/entity"
+	"github.com/backendengineerark/clean-arch/pkg/events"
+)
 
 type OrderInputDTO struct {
 	Price float64 `json:"price"`
@@ -21,14 +24,14 @@ type CreateOrderUseCase struct {
 }
 
 func NewCreateOrderUseCase(
-	OrderRepository entity.OrderRepositoryInterface,
-	OrderCreated events.EventInterface,
-	EventDispatcher events.EventDispatcherInterface,
+	orderRepository entity.OrderRepositoryInterface,
+	orderCreated events.EventInterface,
+	eventDispatcher events.EventDispatcherInterface,
 ) *CreateOrderUseCase {
 	return &CreateOrderUseCase{
-		OrderRepository: OrderRepository,
-		OrderCreated:    OrderCreated,
-		EventDispatcher: EventDispatcher,
+		OrderRepository: orderRepository,
+		OrderCreated:    orderCreated,
+		EventDispatcher: eventDispatcher,
 	}
 }
 
@@ -39,7 +42,7 @@ func (c *CreateOrderUseCase) Execute(input OrderInputDTO) (*OrderOutputDTO, erro
 	}
 	order.CalculateFinalPrice()
 
-	if err := c.OrderRepository.Save(&order); err != nil {
+	if err := c.OrderRepository.Save(order); err != nil {
 		return nil, err
 	}
 
