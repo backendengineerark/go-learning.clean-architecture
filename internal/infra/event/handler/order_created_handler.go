@@ -21,7 +21,7 @@ func NewOrderCreatedHandler(rabbitMQChannel *amqp.Channel) *OrderCreatedHandler 
 
 func (och *OrderCreatedHandler) Handle(event events.EventInterface, wg *sync.WaitGroup) {
 	defer wg.Done()
-	fmt.Printf("Order created: %v", event.GetPayload())
+	fmt.Printf("Order created. Try to send to rabbitmq: %v\n", event.GetPayload())
 	jsonOutput, _ := json.Marshal(event.GetPayload())
 
 	msgRabbitmq := amqp.Publishing{
@@ -30,7 +30,7 @@ func (och *OrderCreatedHandler) Handle(event events.EventInterface, wg *sync.Wai
 	}
 
 	och.RabbitMQChannel.Publish(
-		"amqp.direct",
+		"amq.direct",
 		"",
 		false,
 		false,
